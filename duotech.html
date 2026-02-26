@@ -1042,29 +1042,7 @@
   }
 
   /* ── Form Submit → Google Sheets ── */
-  /*
-   * TO SET UP GOOGLE SHEETS INTEGRATION:
-   * 1. Create a new Google Sheet.
-   * 2. Go to Extensions > Apps Script.
-   * 3. Paste this code in the editor:
-   *
-   *   function doPost(e) {
-   *     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-   *     var data = JSON.parse(e.postData.contents);
-   *     sheet.appendRow([
-   *       new Date(), data.firstName, data.lastName,
-   *       data.email, data.phone, data.service, data.message
-   *     ]);
-   *     return ContentService.createTextOutput(JSON.stringify({status:'ok'}))
-   *       .setMimeType(ContentService.MimeType.JSON);
-   *   }
-   *
-   * 4. Click Deploy > New Deployment > Web App.
-   *    - Execute as: Me
-   *    - Who has access: Anyone
-   * 5. Copy the Web App URL and replace GOOGLE_SCRIPT_URL below.
-   */
-  const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2z--KIkTXJkOotIQ3fnLZqpqg1wnoKwi2irSFkPRObhzelXoN9SFr1k49oitygWnUSA/exec';
 
   async function submitForm() {
     const firstName = document.getElementById('firstName').value.trim();
@@ -1085,28 +1063,22 @@
 
     const payload = { firstName, lastName, email, phone, service, message };
 
-    if(GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-      // Demo mode — just show success
-      setTimeout(() => {
-        document.getElementById('formFields').style.display = 'none';
-        document.getElementById('formSuccess').style.display = 'block';
-      }, 800);
-      return;
-    }
-
     try {
+      // Using no-cors because Google Apps Script doesn't support CORS
       await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+      
+      // Even with no-cors, we assume success and show the thank you message
       document.getElementById('formFields').style.display = 'none';
       document.getElementById('formSuccess').style.display = 'block';
     } catch(err) {
       btn.textContent = 'Submit Inquiry';
       btn.disabled = false;
-      alert('Something went wrong. Please try emailing us directly.');
+      alert('Something went wrong. Please try emailing us directly at maykelkhouryyammine@gmail.com');
     }
   }
 </script>
